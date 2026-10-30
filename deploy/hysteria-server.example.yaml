@@ -1,0 +1,39 @@
+# Example Hysteria2 server config wired to hy2panel.
+#
+# Changes vs. a static-password server:
+#   1. `auth` switched to the panel's HTTP endpoint (replaces `auth: password: ...`)
+#   2. `trafficStats` enabled so the panel can count usage, online devices
+#      and kick users that hit their cap / expiry.
+#   3. obfs stays exactly as before (clients keep using it).
+#
+# NOTE: the per-user passwords no longer come from this file.
+#       Users get their own password from the panel (or via their subscription).
+
+listen: :443
+
+tls:
+  cert: /etc/hysteria/fullchain.pem
+  key: /etc/hysteria/privkey.pem
+
+obfs:
+  type: salamander
+  salamander:
+    password: rayan
+
+# ---- authentication through hy2panel -------------------------------------
+auth:
+  type: http
+  url: http://127.0.0.1:8080/auth   # panel listen address + auth_path
+  insecure: true                    # panel is plain http on localhost
+
+# ---- traffic stats / control API ------------------------------------------
+trafficStats:
+  listen: 127.0.0.1:9999            # only reachable from the VPS itself
+  secret: Se7en                     # must match [traffic_stats].secret in config.toml
+
+# ---- optional --------------------------------------------------------------
+masquerade:
+  type: proxy
+  proxy:
+    url: https://news.ycombinator.com/
+    rewriteHost: true

@@ -1,0 +1,49 @@
+# hy2panel configuration
+# Copy this file to config.toml next to the binary and adjust it.
+# Everything except admin_password / listen / db_path / traffic_stats
+# can later be edited from the panel UI (stored in the database).
+
+# Address the panel listens on.
+#   "127.0.0.1:8080" -> hysteria2 auth + admin only reachable from the VPS itself
+#                       (put a TLS reverse proxy in front for subscriptions)
+#   "0.0.0.0:8080"   -> also reachable from outside (simplest; use HTTPS proxy!)
+listen = "0.0.0.0:8080"
+
+# Public base URL used in subscription links shown to users.
+# Leave empty to auto-derive from the Host header (works behind a reverse proxy).
+base_url = "http://45.146.241.140:8080"
+
+# Path hysteria2 posts auth requests to (auth.url in the server config).
+auth_path = "/auth"
+
+admin_password = "CHANGE_ME"
+
+db_path = "panel.db"
+
+# Optional: external sing-box config template (any valid sing-box config that
+# contains one hysteria2 outbound). Falls back to the bundled template.
+template_path = "template.singbox.json"
+
+# Kick clients that are online when they become expired / over quota / disabled.
+auto_kick = true
+
+# Default display name for profiles / subscription pages.
+profile_name = "HY2"
+
+# Connection details handed out in each user's subscription.
+# These describe YOUR hysteria2 server (clients never talk to the panel).
+[hysteria2]
+server = "45.146.241.140"
+server_port = 443
+sni = "hy.ipkiana.space"
+insecure = true
+# "salamander", "gecko", or "" to disable obfuscation in generated configs
+obfs_type = "salamander"
+obfs_password = "rayan"
+
+# Hysteria2 Traffic Stats API (must match the server's trafficStats section).
+[traffic_stats]
+enabled = true
+url = "http://127.0.0.1:9999"
+secret = "Se7en"
+poll_secs = 30

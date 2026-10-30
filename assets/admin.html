@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>hy2panel</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0f17;--panel:#131a26;--panel2:#0d1420;--line:#1f2a3a;--tx:#e6edf3;--dim:#7d8aa0;--acc:#4f8cff;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.hidden{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding:20px}
+h1{font-size:19px;margin:0}
+h2{font-size:16px;margin:0 0 12px}
+header{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:18px;flex-wrap:wrap}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#4f8cff,#9333ea);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff}
+header .sp{flex:1}
+.chip{font-size:12px;color:var(--dim);background:var(--panel2);border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+.chip b{color:var(--tx)}
+button,select,input,textarea{font:inherit;color:inherit}
+input,select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+input:focus,select:focus{outline:1px solid var(--acc)}
+.btn{background:var(--panel2);border:1px solid var(--line);color:var(--tx);border-radius:8px;padding:7px 12px;cursor:pointer;font-size:13px;white-space:nowrap}
+.btn:hover{background:#16223a}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.danger{color:var(--bad);border-color:#3a1f26}
+.btn.sm{padding:4px 8px;font-size:12px;border-radius:6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.card .k{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+.card .v{font-size:21px;font-weight:700;margin-top:4px}
+.card .v.small{font-size:15px}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);text-align:left;padding:10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid #16202f;vertical-align:top;font-size:13px}
+tr:last-child td{border-bottom:0}
+.tablewrap{overflow-x:auto;border-radius:12px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.st-active{background:var(--ok)}.st-capped{background:var(--warn)}.st-expired{background:var(--bad)}.st-disabled{background:#64748b}
+.pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--panel2);border:1px solid var(--line)}
+.bar{height:6px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:4px;min-width:110px}
+.fill{height:100%;background:var(--acc)}.fill.hot{background:var(--bad)}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.note-box{background:#1f2408;border:1px solid #3a4212;color:#d3d68a;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:14px}
+.overlay{position:fixed;inset:0;background:rgba(4,8,14,.72);display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:14px;width:100%;max-width:520px;max-height:92vh;overflow:auto;padding:22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f{margin-bottom:12px}.f label{display:block;font-size:12px;color:var(--dim);margin-bottom:4px}
+.modalfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+.log td{font-size:12px;padding:6px 10px}
+#toast{position:fixed;bottom:18px;right:18px;display:flex;flex-direction:column;gap:8px;z-index:99}
+.toast{background:#16223a;border:1px solid #2b3b55;padding:10px 14px;border-radius:10px;font-size:13px;box-shadow:0 6px 24px rgba(0,0,0,.4);max-width:340px;word-break:break-all}
+.spark{display:flex;align-items:flex-end;gap:4px;height:120px;padding:8px 0}
+.spark .b{flex:1;background:var(--acc);border-radius:3px 3px 0 0;min-height:2px;position:relative}
+.spark .b.hot{background:var(--bad)}
+.spark .b span{display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:#000;color:#fff;font-size:11px;padding:3px 6px;border-radius:6px;white-space:nowrap}
+.spark .b:hover span{display:block}
+.login-box{max-width:360px;margin:12vh auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px;text-align:center}
+.login-box .logo{margin:0 auto 12px;width:44px;height:44px;font-size:18px}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="login" class="hidden">
+  <div class="login-box">
+    <div class="logo">hy2</div>
+    <h2>hy2panel</h2>
+    <p class="mono" style="color:var(--dim);font-size:12px">Hysteria2 user management</p>
+    <div class="f"><input id="pw" type="password" placeholder="Admin password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn primary" style="width:100%" onclick="doLogin()">Sign in</button>
+    <p id="loginerr" style="color:var(--bad);font-size:13px"></p>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="wrap">
+    <header>
+      <div class="logo">hy2</div>
+      <h1>hy2panel</h1>
+      <span class="chip" id="statsChip" title="Traffic Stats API status">stats: <b>…</b></span>
+      <div class="sp"></div>
+      <button class="btn" onclick="openSettings()">⚙ Settings</button>
+      <button class="btn" onclick="toggleLog()">🗒 Auth log</button>
+      <button class="btn primary" onclick="openUser()">+ New user</button>
+      <button class="btn" onclick="doLogout()">Logout</button>
+    </header>
+
+    <div class="cards">
+      <div class="card"><div class="k">Users</div><div class="v" id="cUsers">–</div></div>
+      <div class="card"><div class="k">Active</div><div class="v" id="cActive">–</div></div>
+      <div class="card"><div class="k">Devices online</div><div class="v" id="cOnline">–</div></div>
+      <div class="card"><div class="k">Traffic today</div><div class="v small" id="cToday">–</div></div>
+      <div class="card"><div class="k">Traffic this month</div><div class="v small" id="cMonth">–</div></div>
+    </div>
+
+    <div id="statsWarn" class="note-box hidden"></div>
+
+    <div class="tablewrap">
+    <table>
+      <thead><tr>
+        <th>User</th><th>Password</th><th>Usage</th><th>Expiry</th><th>Devices</th><th>Subscription</th><th>Actions</th>
+      </tr></thead>
+      <tbody id="rows"><tr><td colspan="7" style="color:var(--dim)">loading…</td></tr></tbody>
+    </table>
+    </div>
+
+    <div id="logSection" class="hidden" style="margin-top:22px">
+      <h2>Authentication log <button class="btn sm" onclick="loadLog()">refresh</button></h2>
+      <div class="tablewrap">
+      <table class="log">
+        <thead><tr><th>Time</th><th>User</th><th>Address</th><th>Result</th><th>Reason</th></tr></thead>
+        <tbody id="logRows"></tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="userModal" class="overlay hidden">
+  <div class="modal">
+    <h2 id="umTitle">New user</h2>
+    <div class="grid2">
+      <div class="f"><label>Username</label><input id="fUsername" placeholder="alice"></div>
+      <div class="f"><label>Password (empty = generate)</label><input id="fPassword" class="mono" placeholder=""></div>
+      <div class="f"><label>Data limit (GB)</label><input id="fLimit" type="number" min="0" step="any" placeholder="empty = unlimited"></div>
+      <div class="f"><label>Reset mode</label>
+        <select id="fReset">
+          <option value="monthly">Monthly cycle</option>
+          <option value="total">One-time (total)</option>
+          <option value="none">No quota</option>
+        </select></div>
+      <div class="f" id="fResetDayW"><label>Reset day (1-28)</label><input id="fResetDay" type="number" min="1" max="28" value="1"></div>
+      <div class="f"><label>Device limit</label><input id="fDev" type="number" min="0" placeholder="empty = unlimited"></div>
+      <div class="f"><label>Expiry (local time)</label><input id="fExpiry" type="datetime-local"></div>
+      <div class="f"><label>Enabled</label><select id="fEnabled"><option value="1">Yes</option><option value="0">No</option></select></div>
+    </div>
+    <div class="f"><label>Note (internal)</label><input id="fNote" placeholder="e.g. Ali — phone"></div>
+    <div class="modalfoot">
+      <button class="btn" onclick="closeModal('userModal')">Cancel</button>
+      <button class="btn primary" id="umSave" onclick="saveUser()">Create user</button>
+    </div>
+  </div>
+</div>
+
+<div id="settingsModal" class="overlay hidden">
+  <div class="modal">
+    <h2>Settings</h2>
+    <p style="color:var(--dim);font-size:12px;margin-top:-6px">Connection details used to generate subscriptions. Stats API settings come from config.toml.</p>
+    <div class="grid2">
+      <div class="f"><label>Panel base URL (sub links)</label><input id="sBase" placeholder="https://panel.example.com"></div>
+      <div class="f"><label>Profile name</label><input id="sProfile" placeholder="HY2"></div>
+      <div class="f"><label>Hysteria2 server address</label><input id="sServer" class="mono"></div>
+      <div class="f"><label>Server port</label><input id="sPort" type="number" min="1" max="65535"></div>
+      <div class="f"><label>TLS SNI</label><input id="sSni" class="mono"></div>
+      <div class="f"><label>Skip cert verify</label><select id="sInsecure"><option value="0">No</option><option value="1">Yes</option></select></div>
+      <div class="f"><label>Obfuscation</label>
+        <select id="sObfsType"><option value="salamander">salamander</option><option value="gecko">gecko</option><option value="">none</option></select></div>
+      <div class="f"><label>Obfs password</label><input id="sObfsPw" class="mono"></div>
+    </div>
+    <h2 style="margin-top:14px">Change admin password</h2>
+    <div class="grid2">
+      <div class="f"><label>Current password</label><input id="sOldPw" type="password"></div>
+      <div class="f"><label>New password</label><input id="sNewPw" type="password"></div>
+    </div>
+    <div class="modalfoot">
+      <button class="btn" onclick="closeModal('settingsModal')">Cancel</button>
+      <button class="btn primary" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="usageModal" class="overlay hidden">
+  <div class="modal">
+    <h2 id="usTitle">Usage</h2>
+    <div class="spark" id="usSpark"></div>
+    <p class="mono" style="color:var(--dim);font-size:12px" id="usTotal"></p>
+    <div class="modalfoot"><button class="btn" onclick="closeModal('usageModal')">Close</button></div>
+  </div>
+</div>
+
+<div id="createdModal" class="overlay hidden">
+  <div class="modal">
+    <h2>✅ User created</h2>
+    <p style="color:var(--dim);font-size:13px">Share the subscription link — the client imports everything (password, obfs, TLS) automatically.</p>
+    <div class="f"><label>Username</label><input id="crUser" readonly class="mono"></div>
+    <div class="f"><label>Password</label><input id="crPw" readonly class="mono"></div>
+    <div class="f"><label>Subscription URL (sing-box)</label><input id="crSub" readonly class="mono"></div>
+    <div class="modalfoot">
+      <button class="btn" onclick="copyEl('crPw')">Copy password</button>
+      <button class="btn primary" onclick="copyEl('crSub')">Copy sub URL</button>
+      <button class="btn" onclick="closeModal('createdModal');loadAll()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+let USERS = [], EDIT = null, LOGSHOWN = false;
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;$('toast').appendChild(t);setTimeout(()=>t.remove(),3200)}
+function bytes(n){n=Math.max(0,Number(n)||0);const u=['B','KB','MB','GB','TB','PB'];let i=0;while(n>=1024&&i<u.length-1){n/=1024;i++}return n.toFixed(i?1:0)+' '+u[i]}
+function fmtD(iso){if(!iso)return '—';const d=new Date(iso);return isNaN(d)?iso:d.toLocaleString(undefined,{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}
+function daysLeft(iso){if(!iso)return null;const d=new Date(iso);if(isNaN(d))return null;return Math.max(0,Math.ceil((d-Date.now())/864e5))}
+function copyText(t){if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>toast('Copied')).catch(()=>fallbackCopy(t))}else fallbackCopy(t)}
+function fallbackCopy(t){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Copied')}catch(e){toast('Copy failed')}ta.remove()}
+function copyEl(id){copyText($(id).value)}
+
+async function api(path,opts={}){const r=await fetch(path,{headers:{'Content-Type':'application/json'},...opts});
+ if(r.status===401){showLogin();throw new Error('unauthorized')}
+ const data=await r.json().catch(()=>({}));
+ if(!r.ok)throw new Error(data.error||('HTTP '+r.status));
+ return data}
+
+function showLogin(){$('login').classList.remove('hidden');$('app').classList.add('hidden')}
+function showApp(){$('login').classList.add('hidden');$('app').classList.remove('hidden')}
+function closeModal(id){$(id).classList.add('hidden')}
+
+async function doLogin(){
+ try{await api('/api/login',{method:'POST',body:JSON.stringify({password:$('pw').value})});
+  $('loginerr').textContent='';$('pw').value='';showApp();loadAll();
+ }catch(e){$('loginerr').textContent=e.message==='unauthorized'?'Wrong password':e.message}}
+async function doLogout(){try{await api('/api/logout',{method:'POST'})}catch(e){}showLogin()}
+
+async function loadAll(){try{
+ const [ov,us]=await Promise.all([api('/api/overview'),api('/api/users')]);
+ $('cUsers').textContent=ov.users;$('cActive').textContent=ov.active;
+ $('cOnline').textContent=ov.online_devices;
+ $('cToday').textContent=bytes(ov.today_tx+ov.today_rx);
+ $('cMonth').textContent=bytes(ov.month_tx+ov.month_rx);
+ const chip=$('statsChip').querySelector('b');
+ if(!ov.stats_enabled){chip.textContent='disabled';chip.style.color='var(--dim)';$('statsWarn').classList.add('hidden')}
+ else{chip.textContent=ov.stats_up?'online':'DOWN';chip.style.color=ov.stats_up?'var(--ok)':'var(--bad)';
+  $('statsWarn').classList.toggle('hidden',ov.stats_up);
+  if(!ov.stats_up)$('statsWarn').textContent='⚠ Traffic Stats API unreachable — usage accounting, device limits and auto-kick are degraded. Check trafficStats in the hysteria2 server config and [traffic_stats] in config.toml.'}
+ USERS=us.users||[];renderUsers();
+ if(LOGSHOWN)loadLog();
+}catch(e){if(e.message!=='unauthorized')toast('Load failed: '+e.message)}}
+
+function renderUsers(){
+ if(!USERS.length){$('rows').innerHTML='<tr><td colspan="7" style="color:var(--dim)">No users yet — click “+ New user”.</td></tr>';return}
+ $('rows').innerHTML=USERS.map(u=>{
+  const st=u.status,cls='st-'+st;
+  const limit=u.data_limit_bytes;
+  const pctv=limit?Math.min(100,u.used_bytes/limit*100):0;
+  const usage=limit
+    ?`<div>${bytes(u.used_bytes)} / ${bytes(limit)}</div><div class="bar"><div class="fill${pctv>90?' hot':''}" style="width:${pctv.toFixed(1)}%"></div></div><div style="color:var(--dim);font-size:11px">${pctv.toFixed(0)}% · ${u.reset_mode==='monthly'?'resets day '+u.reset_day:u.reset_mode==='total'?'one-time':'no quota'}</div>`
+    :`<div>${bytes(u.used_bytes)}</div><div style="color:var(--dim);font-size:11px">unlimited${u.reset_mode==='none'?'':' · '+u.reset_mode}</div>`;
+  const dl=daysLeft(u.expiry);
+  const expiry=u.expiry?`${fmtD(u.expiry)}<div style="color:${dl<=3?'var(--bad)':'var(--dim)'};font-size:11px">${dl} day${dl===1?'':'s'} left</div>`:'<span style="color:var(--dim)">never</span>';
+  const dev=`${u.online}${u.concurrent_limit?' / '+u.concurrent_limit:''}`;
+  const pw=`<span class="mono" data-full="${esc(u.password)}" onclick="this.textContent=this.dataset.full" title="click to reveal">••••••••</span> <button class="btn sm" onclick="copyText('${esc(u.password)}')">⧉</button>`;
+  const sub=`<button class="btn sm" onclick="copyText('${esc(u.sub_url)}')">⧉ URL</button> <button class="btn sm" onclick="window.open('${esc(u.sub_url)}?target=info','_blank')">📄</button>`;
+  const act=`<div class="actions">
+    <button class="btn sm" onclick="openUser('${esc(u.username)}')">Edit</button>
+    <button class="btn sm" onclick="showUsage('${esc(u.username)}')">Usage</button>
+    <button class="btn sm" onclick="kickUser('${esc(u.username)}')">Kick</button>
+    <button class="btn sm" onclick="resetTraffic('${esc(u.username)}')">Reset</button>
+    <button class="btn sm" onclick="regenToken('${esc(u.username)}')">Re-token</button>
+    <button class="btn sm danger" onclick="delUser('${esc(u.username)}')">Del</button>
+  </div>`;
+  return `<tr>
+   <td><span class="dot ${cls}"></span><b>${esc(u.username)}</b>${u.note?`<div style="color:var(--dim);font-size:11px">${esc(u.note)}</div>`:''}${st!=='active'?`<div><span class="pill">${st}</span></div>`:''}</td>
+   <td>${pw}</td>
+   <td>${usage}</td>
+   <td>${expiry}</td>
+   <td>${dev}</td>
+   <td>${sub}</td>
+   <td>${act}</td>
+  </tr>`}).join('')}
+
+function openUser(name){
+ EDIT=name||null;
+ $('umTitle').textContent=EDIT?'Edit user: '+EDIT:'New user';
+ $('umSave').textContent=EDIT?'Save changes':'Create user';
+ $('fUsername').value=EDIT||'';$('fUsername').disabled=!!EDIT;$('fPassword').value='';$('fNote').value='';
+ $('fLimit').value='';$('fReset').value='monthly';$('fResetDay').value='1';$('fDev').value='';
+ $('fExpiry').value='';$('fEnabled').value='1';$('fResetDayW').style.display='';
+ if(EDIT){const u=USERS.find(x=>x.username===EDIT);if(u){
+  $('fPassword').placeholder='leave empty to keep';
+  $('fLimit').value=u.data_limit_bytes?(u.data_limit_bytes/1073741824).toFixed(2):'';
+  $('fReset').value=u.reset_mode;$('fResetDay').value=u.reset_day;
+  $('fDev').value=u.concurrent_limit||'';$('fNote').value=u.note||'';
+  $('fEnabled').value=u.enabled?'1':'0';
+  if(u.expiry){const d=new Date(u.expiry);if(!isNaN(d)){const p=n=>String(n).padStart(2,'0');
+   $('fExpiry').value=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}}
+ }}else{$('fPassword').placeholder='empty = generate'}
+ $('userModal').classList.remove('hidden')}
+function fResetChanged(){$('fResetDayW').style.display=$('fReset').value==='monthly'?'':'none'}
+
+function localToIso(v){if(!v)return null;const d=new Date(v);return isNaN(d)?null:d.toISOString()}
+
+async function saveUser(){
+ const body={
+  username:$('fUsername').value.trim()||undefined,
+  password:$('fPassword').value.trim()||undefined,
+  note:$('fNote').value,
+  data_limit_gb:parseFloat($('fLimit').value)||0,
+  reset_mode:$('fReset').value,
+  reset_day:parseInt($('fResetDay').value)||1,
+  concurrent_limit:parseInt($('fDev').value)||0,
+  expiry:localToIso($('fExpiry').value)||'',
+  enabled:$('fEnabled').value==='1'};
+ try{
+  if(EDIT){await api('/api/users/'+encodeURIComponent(EDIT),{method:'PUT',body:JSON.stringify(body)});toast('Saved');closeModal('userModal');loadAll()}
+  else{const u=await api('/api/users',{method:'POST',body:JSON.stringify(body)});
+   closeModal('userModal');
+   $('crUser').value=u.username;$('crPw').value=u.password;$('crSub').value=u.sub_url;
+   $('createdModal').classList.remove('hidden')}
+ }catch(e){toast(e.message)}}
+
+async function delUser(n){if(!confirm('Delete user "'+n+'"? Their clients will be disconnected on next auth.'))return;
+ try{await api('/api/users/'+encodeURIComponent(n),{method:'DELETE'});toast('Deleted');loadAll()}catch(e){toast(e.message)}}
+async function resetTraffic(n){if(!confirm('Reset traffic counters for "'+n+'"?'))return;
+ try{await api('/api/users/'+encodeURIComponent(n)+'/reset-traffic',{method:'POST'});toast('Traffic reset');loadAll()}catch(e){toast(e.message)}}
+async function regenToken(n){if(!confirm('Regenerate subscription URL for "'+n+'"? Old link stops working.'))return;
+ try{const u=await api('/api/users/'+encodeURIComponent(n)+'/regen-token',{method:'POST'});toast('New token: '+u.sub_url);copyText(u.sub_url);loadAll()}catch(e){toast(e.message)}}
+async function kickUser(n){try{await api('/api/users/'+encodeURIComponent(n)+'/kick',{method:'POST'});toast('Kicked');loadAll()}catch(e){toast(e.message)}}
+
+async function showUsage(n){
+ $('usTitle').textContent='Usage — '+n;$('usSpark').innerHTML='<span style="color:var(--dim)">loading…</span>';$('usTotal').textContent='';
+ $('usageModal').classList.remove('hidden');
+ try{const d=await api('/api/users/'+encodeURIComponent(n)+'/usage?days=14');
+  const rows=(d.usage||[]).slice().reverse();
+  const max=Math.max(1,...rows.map(r=>r.tx+r.rx));
+  $('usSpark').innerHTML=rows.map(r=>{const t=r.tx+r.rx;const h=Math.max(2,t/max*100);
+   return `<div class="b${r.rx>r.tx*2?' hot':''}" style="height:${h}%"><span>${r.day}\n↑${bytes(r.tx)} ↓${bytes(r.rx)}</span></div>`}).join('')||'<span style="color:var(--dim)">no data yet</span>';
+  const tot=rows.reduce((a,r)=>a+r.tx+r.rx,0);
+  $('usTotal').textContent='last '+rows.length+' day(s): '+bytes(tot);
+ }catch(e){toast(e.message)}}
+
+function toggleLog(){LOGSHOWN=!LOGSHOWN;$('logSection').classList.toggle('hidden',!LOGSHOWN);if(LOGSHOWN)loadLog()}
+async function loadLog(){try{const d=await api('/api/authlog?limit=150');
+ $('logRows').innerHTML=(d.log||[]).map(l=>`<tr>
+  <td class="mono">${esc(l.ts.replace('T',' ').replace('Z',''))}</td>
+  <td>${esc(l.username||'?')}</td><td class="mono">${esc(l.addr)}</td>
+  <td style="color:${l.ok?'var(--ok)':'var(--bad)'}">${l.ok?'✓ ok':'✗ denied'}</td>
+  <td style="color:var(--dim)">${esc(l.reason)}</td></tr>`).join('')||'<tr><td colspan="5" style="color:var(--dim)">empty</td></tr>'
+}catch(e){toast(e.message)}}
+
+async function openSettings(){try{const d=await api('/api/settings');const s=d.settings;
+ $('sBase').value=s.base_url||'';$('sProfile').value=s.profile_name||'';
+ $('sServer').value=s.hy2_server||'';$('sPort').value=s.hy2_server_port;
+ $('sSni').value=s.hy2_sni||'';$('sInsecure').value=s.hy2_insecure?'1':'0';
+ $('sObfsType').value=s.hy2_obfs_type||'';$('sObfsPw').value=s.hy2_obfs_password||'';
+ $('sOldPw').value='';$('sNewPw').value='';
+ $('settingsModal').classList.remove('hidden');
+ if(d.stats&&d.stats.enabled)toast('Stats API: '+(d.stats.up?'online':'DOWN')+' — '+d.stats.url);
+}catch(e){toast(e.message)}}
+
+async function saveSettings(){
+ try{
+  await api('/api/settings',{method:'PUT',body:JSON.stringify({
+   base_url:$('sBase').value.trim(),profile_name:$('sProfile').value.trim(),
+   hy2_server:$('sServer').value.trim(),hy2_server_port:parseInt($('sPort').value)||443,
+   hy2_sni:$('sSni').value.trim(),hy2_insecure:$('sInsecure').value==='1',
+   hy2_obfs_type:$('sObfsType').value,hy2_obfs_password:$('sObfsPw').value})});
+  const o=$('sOldPw').value,n=$('sNewPw').value;
+  if(o||n){await api('/api/password',{method:'POST',body:JSON.stringify({old:o,new:n})});toast('Admin password changed')}
+  toast('Settings saved');closeModal('settingsModal');loadAll()
+ }catch(e){toast(e.message)}}
+
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.add('hidden')}));
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='fReset')fResetChanged()});
+
+(async function init(){
+ try{await api('/api/overview');showApp();loadAll()}catch(e){showLogin()}
+ setInterval(()=>{if(!$('app').classList.contains('hidden'))loadAll()},15000);
+})();
+</script>
+</body>
+</html>

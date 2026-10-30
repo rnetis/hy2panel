@@ -1,0 +1,23 @@
+# Test configuration for smoke-testing hy2panel in the sandbox
+listen = "127.0.0.1:8091"
+base_url = "http://45.146.241.140:8091"
+auth_path = "/auth"
+admin_password = "test123"
+db_path = "test-panel.db"
+template_path = "template.singbox.json"
+auto_kick = true
+profile_name = "HY2"
+
+[hysteria2]
+server = "45.146.241.140"
+server_port = 443
+sni = "hy.ipkiana.space"
+insecure = true
+obfs_type = "salamander"
+obfs_password = "rayan"
+
+[traffic_stats]
+enabled = true
+url = "http://127.0.0.1:8092"
+secret = "Se7en"
+poll_secs = 3

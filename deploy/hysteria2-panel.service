@@ -1,0 +1,23 @@
+# systemd unit for hy2panel
+#   sudo cp deploy/hysteria2-panel.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now hysteria2-panel
+[Unit]
+Description=Hysteria2 user management panel (hy2panel)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Directory containing config.toml, template.singbox.json and panel.db
+WorkingDirectory=/opt/hy2panel
+ExecStart=/opt/hy2panel/hy2panel
+Restart=always
+RestartSec=3
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

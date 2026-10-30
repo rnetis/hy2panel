@@ -1,0 +1,114 @@
+{
+  "log": {
+    "level": "warn"
+  },
+  "dns": {
+    "servers": [
+      {
+        "type": "local",
+        "tag": "local"
+      },
+      {
+        "type": "https",
+        "tag": "remote",
+        "server": "dns.adguard-dns.com",
+        "path": "/dns-query",
+        "detour": "hy2"
+      }
+    ],
+    "final": "remote",
+    "strategy": "prefer_ipv4"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "address": [
+        "172.19.0.1/30"
+      ],
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "mixed"
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "hysteria2",
+      "tag": "hy2",
+      "server": "45.146.241.140",
+      "server_port": 443,
+      "password": "PASSWORD_PLACEHOLDER",
+      "obfs": {
+        "type": "salamander",
+        "password": "OBFS_PLACEHOLDER"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "hy.ipkiana.space",
+        "insecure": true
+      },
+      "bbr_profile": "standard"
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "rules": [
+      {
+        "action": "sniff"
+      },
+      {
+        "ip_is_private": true,
+        "action": "route",
+        "outbound": "direct"
+      },
+      {
+        "protocol": "dns",
+        "action": "hijack-dns"
+      },
+      {
+        "rule_set": [
+          "geosite-ir"
+        ],
+        "action": "route",
+        "outbound": "direct"
+      },
+      {
+        "rule_set": [
+          "geoip-ir"
+        ],
+        "action": "route",
+        "outbound": "direct"
+      }
+    ],
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "geosite-ir",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-ir.srs",
+        "download_detour": "direct"
+      },
+      {
+        "type": "remote",
+        "tag": "geoip-ir",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geoip-ir.srs",
+        "download_detour": "direct"
+      }
+    ],
+    "final": "hy2"
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true
+    }
+  }
+}
